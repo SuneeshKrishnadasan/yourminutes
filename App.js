@@ -1,12 +1,12 @@
 import React, { PureComponent } from 'react';
-import { AppRegistry, StyleSheet, Text, TouchableOpacity, View, CameraRoll, PermissionsAndroid } from 'react-native';
+import { AppRegistry, StyleSheet, Text, TouchableOpacity, View, CameraRoll,Alert, PermissionsAndroid } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 import Pop from './src/modules/cam/pop'
-
+import Viewplate from './viewPlate'
 export default class App extends PureComponent {
   constructor(props){
     super(props)
-    this.state={cam:false,pop:false,whitebalance:RNCamera.Constants.WhiteBalance.auto
+    this.state={Imagedata:null,buttonDiasable:false,cam:false,pop:false,whitebalance:RNCamera.Constants.WhiteBalance.auto,istaken:false,
       
     }
   }
@@ -15,7 +15,9 @@ export default class App extends PureComponent {
   
 
   render() {
-
+console.log(this.state
+  
+)
     return (
       <View style={[styles.container,]}>
         <RNCamera
@@ -51,33 +53,44 @@ export default class App extends PureComponent {
             console.log(barcodes);
           }}
         />
-        <View style={{ flex: 0, flexDirection: 'row', justifyContent: 'center' }}>
-          <TouchableOpacity onPress={this.takePicture.bind(this)} style={styles.capture}>
-            <Text style={{ fontSize: 14 }}> SNAP </Text>
-          </TouchableOpacity>
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
+          
           <TouchableOpacity onPress={()=>this.setState({cam:!this.state.cam})} style={styles.capture}>
             <Text style={{ fontSize: 14 }}> {this.state.cam?"back":"fornt"} </Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={()=>this.setState({pop:!this.state.pop})} style={styles.capture}>
             <Text style={{ fontSize: 14 }}> SNAP </Text>
           </TouchableOpacity>
-          
+         {!this.state.buttonDiasable&& <TouchableOpacity onPress={this.takePicture.bind(this)} style={styles.capture}>
+            <Text style={{ fontSize: 14 }}> YourMoment </Text>
+          </TouchableOpacity>}
+
+          <TouchableOpacity onPress={()=>{let numberOfCameras = RNCamera.getNumberOfCameras();
+          console.log('object',numberOfCameras)}} style={styles.capture}>
+            <Text style={{ fontSize: 14 }}>camera list </Text>
+          </TouchableOpacity>
+         
         </View>
        {this.state.pop&&<Pop setWhite={(data)=>this.setState({whitebalance:data,pop:!this.state.pop})} ></Pop>}
+      
+     {this.state.istaken&&<Viewplate goback={()=>this.setState(
+       {istaken:false,buttonDiasable:false}
+     )} imageCode={this.state.Imagedata&&this.state.Imagedata.uri?this.state.Imagedata.uri:null}></Viewplate>}
       </View>
     );
   }
 
 
   takePicture = async () => {
-   console.log("object",this.camera.getSupportedRatiosAsync() )
-   
-   console.log("object",getCameraIds() )
+this.setState({buttonDiasable:true})
 
 if(this.camera){
     const options = { quality: 1, base64: true };
     const data = await this.camera.takePictureAsync(options);
     //  eslint-disable-next-line
+    if(data){
+    this.setState({Imagedata:data,istaken:true})
+        //  this.setState({istaken:true})
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
@@ -89,13 +102,16 @@ if(this.camera){
       )
       if (granted) {
         // console.log("You can use the camera",data)
-        CameraRoll.saveToCameraRoll(data.uri, "photo").then(res=>{console.log("sucsesss")});
+        CameraRoll.saveToCameraRoll(data.uri, "photo").then(res=>{
+     
+         
+        })
       } else {
-        // console.log("Camera permission denied")
+    console.log("Camera permission denied")
       }
     } catch (err) {
       console.warn(err)
-    }
+    }}
  
   }}
 }
