@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
-import { View ,ActivityIndicator} from 'react-native'
+import { View ,ActivityIndicator,Text,TouchableOpacity } from 'react-native'
 import LoginForm from "./../../components/login/loginform"
 import {styles} from "./../../style"
 import { connect } from "react-redux";
 import { compose } from "recompose";
 import Loading from "./../../effects/loading"
+
 
 
 const mapDispatchToProps = ({ loginModal }) => {
@@ -51,9 +52,9 @@ class Page extends React.Component {
   	return (
     <Loading loading = {this.props.loading}>
       <View style={[ styles.horizontal]} >
-        <LoginForm onSubmit = {(values)=> {
-          console.log("called")
-           this.props.login(values)}}/>
+        <TouchableOpacity onPress={()=>{this.props.navigation.navigate("Camera")}}>
+          <Text>Camera</Text>
+        </TouchableOpacity>
       </View>
     </Loading>); 
   }

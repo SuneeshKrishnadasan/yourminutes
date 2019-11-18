@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { AppRegistry, StyleSheet, Text, TouchableOpacity, View, CameraRoll,Alert, PermissionsAndroid } from 'react-native';
 import { RNCamera } from 'react-native-camera';
-import Pop from './src/modules/cam/pop'
-import Viewplate from './viewPlate'
+import Pop from '../cam/pop'
+import Viewplate from '../../../viewPlate'
 export default class App extends PureComponent {
   constructor(props){
     super(props)
@@ -82,36 +82,18 @@ console.log(this.state
 
 
   takePicture = async () => {
-this.setState({buttonDiasable:true})
+ this.setState({buttonDiasable:true})
 
-if(this.camera){
+ if(this.camera){
     const options = { quality: 1, base64: true };
     const data = await this.camera.takePictureAsync(options);
     //  eslint-disable-next-line
     if(data){
-    this.setState({Imagedata:data,istaken:true})
-        //  this.setState({istaken:true})
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-        {
-          'title': 'Cool Photo App Camera Permission',
-          'message': 'Cool Photo App needs access to your camera ' +
-            'so you can take awesome pictures.'
-        }
-      )
-      if (granted) {
-        // console.log("You can use the camera",data)
-        CameraRoll.saveToCameraRoll(data.uri, "photo").then(res=>{
-     
-         
-        })
-      } else {
-    console.log("Camera permission denied")
-      }
-    } catch (err) {
-      console.warn(err)
-    }}
+    this.setState({Imagedata:data,})
+
+      this.props.navigation.navigate("ImgView",{imgData:data})
+      this.setState({buttonDiasable:false})
+   }
  
   }}
 }
